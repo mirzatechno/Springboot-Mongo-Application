@@ -31,8 +31,8 @@ spec:
             cpu: 100m
             memory: 156Mi
           limits:
-            cpu: 200m
-            memory: 256Mi
+            cpu: 100m
+            memory: 156Mi
         env:
         - name: MONGO_DB_HOSTNAME
           value: mongo-service #MongoDB Service Name
