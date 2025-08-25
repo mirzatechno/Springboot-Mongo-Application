@@ -1,21 +1,8 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: springappconfig
-  namespace: development
-data:            # We can define multiple key value pairs.
-  mongodbusername: devb
-  ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: development
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: springboot-deployment
-  namespace: development
+  namespace: production
 spec:
   replicas: 2
   selector:
@@ -45,21 +32,15 @@ spec:
         - name: MONGO_DB_HOSTNAME
           value: mongo-service #MongoDB Service Name
         - name: MONGO_DB_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: springappconfig
-              key: mongodbusername
+          value: production
         - name: MONGO_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: springappsecret
-              key: mongodbpassword
+          value: production@123
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: springboot-service
-  namespace: development
+  namespace: production
 spec:
   type: NodePort
   selector:
@@ -72,7 +53,7 @@ apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
    name: mongo-replicaset
-   namespace: development
+   namespace: production
 spec:
   replicas: 1
   selector:
@@ -91,28 +72,15 @@ spec:
         - containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: springappconfig
-              key: mongodbusername
+          value: production
         - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: springappsecret
-              key:  mongodbpassword
-        volumeMounts:
-          - name: mongodbhostvol
-            mountPath: /data/db
-        volumes:
-          - name: mongodbhostvol
-            hostPath:
-              path: /tmp/mongo
+          value: production@123
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mongo-service #Service Name Should be Given for MONGO_DB_HOSTNAME
-  namespace: development
+  namespace: production
 spec:
   type: ClusterIP
   selector:
