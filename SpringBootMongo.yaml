@@ -1,4 +1,12 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: springappconfig
+  namespace: devlopment
+data:            # We can define multiple key value pairs.
+  mongodbusername: devb
+  ---
+apiVersion: v1
 kind: Namespace
 metadata:
   name: development
