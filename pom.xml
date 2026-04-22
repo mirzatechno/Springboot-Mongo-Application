@@ -16,8 +16,8 @@
 	<properties>
 		<sonar.projectKey>spring-boot-mongo</sonar.projectKey>
         <sonar.projectName>spring-boot-mongo</sonar.projectName>
-        <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.login>your_token_here</sonar.login>
+        <sonar.host.url>http://13.232.8.0:9000/</sonar.host.url>
+        <sonar.login>squ_c93d0bb061c079cc9c4a13c2be4cca2f12d26b18</sonar.login>
 		<java.version>1.8</java.version>
 		<spring-boot.version>2.1.5.RELEASE</spring-boot.version>
 		<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
