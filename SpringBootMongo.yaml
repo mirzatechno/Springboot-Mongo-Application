@@ -47,7 +47,7 @@ metadata:
   name: springboot-service
   namespace: production
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     application: springbootmongo
   ports:
