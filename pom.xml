@@ -14,6 +14,10 @@
 	<artifactId>spring-boot-mongo</artifactId>
 	<version>1.0</version>
 	<properties>
+		<sonar.projectKey>spring-boot-mongo</sonar.projectKey>
+        <sonar.projectName>spring-boot-mongo</sonar.projectName>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.login>your_token_here</sonar.login>
 		<java.version>1.8</java.version>
 		<spring-boot.version>2.1.5.RELEASE</spring-boot.version>
 		<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
@@ -88,6 +92,11 @@
 	
 	<build>
 		<plugins>
+			<plugin>
+                 <groupId>org.sonarsource.scanner.maven</groupId>
+                 <artifactId>sonar-maven-plugin</artifactId>
+                 version>3.10.0.2594</version>
+            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
