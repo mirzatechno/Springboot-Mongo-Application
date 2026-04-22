@@ -40,6 +40,24 @@ spec:
           value: production
         - name: MONGO_DB_PASSWORD
           value: production123
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 30
+        periodSeconds: 20
+        timeoutSeconds: 5
+        failureThreshold: 3  
 ---
 apiVersion: v1
 kind: Service
