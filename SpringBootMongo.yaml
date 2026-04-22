@@ -39,7 +39,7 @@ spec:
         - name: MONGO_DB_USERNAME
           value: production
         - name: MONGO_DB_PASSWORD
-          value: production@123
+          value: production123
 ---
 apiVersion: v1
 kind: Service
@@ -79,7 +79,7 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: production
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: production@123
+          value: production123
 ---
 apiVersion: v1
 kind: Service
