@@ -1,69 +1,68 @@
-pipeline
-{
-	agent any
-	
-    tools
-	{
-		maven 'Maven_3.8.6'
+pipeline {
+    agent any
+    environment {
+        AWS_REGION= 'ap-south-1'
+        ECR_REPO= '607709788195.dkr.ecr.ap-south-1.amazonaws.com/spring-mongo-app'
+        IMAGE_TAG= "${BUILD_NUMBER}"
+        }
+    tools {
+        maven 'maven3.9.15'
     }
-	
-    environment
-    {
-		Build_Number = "${BUILD_NUMBER}"
-    }
-	
-	stages
-	{
-		stage('Git Checkout')
-		{
-			steps()
-			{
-				git 'https://github.com/TestAutomationDevOps/maven-web-application.git'
-			}
-		}
-		
-		stage('Build Project')
-		{
-			steps()
-			{
-				sh 'mvn clean package'
-			}
-		}
-		
-		stage('Build Docker Image')
-		{
-			steps()
-			{
-				sh "docker build -t 873892298042.dkr.ecr.ap-south-1.amazonaws.com/java-maven-application:$Build_Number ."
-			}
-		}
-		
-		stage('Push Docker Image to AWS ECR')
-		{
-			steps()
-			{
-				sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 873892298042.dkr.ecr.ap-south-1.amazonaws.com"
-				sh "docker push 873892298042.dkr.ecr.ap-south-1.amazonaws.com/java-maven-application:$Build_Number"
-			}
-		}
-		
-		stage("Update Image Tag in Kubernetes Manifest")
-		{
-			steps()
-            {
-				//Build_Tag - To Be Added in Manifest File RegistryURL/java-maven-application:Build_Tag
-				//Build_Number - Parameterised Build Number.
-				sh "sed -i 's/Build_Tag/${Build_Number}/g' mavenwebappdeployment.yaml"
+    stages {
+        stage('git clone') {
+            steps {
+               git 'https://github.com/mirzatechno/Springboot-Mongo-Application.git'
+            } 
+        }
+        stage('maven build'){
+            steps{
+                sh "mvn clean package"
             }
         }
-		
-		stage('Deploy Application in EKS Kubernetes Cluster')
-		{
-			steps()
-			{
-				sh 'kubectl delete deployment springbootmongo-deployment -n production || true'
-				sh 'kubectl apply -f SpringBootMongo.yaml'
-			}
-		}
-	}
-}
+         stage('sonarqube report '){
+            steps{
+                sh "mvn sonar:sonar"
+            }
+        }
+        stage('Docker Build'){
+            steps{
+                sh "docker build -t $ECR_REPO:$IMAGE_TAG ."
+            }
+        }
+        stage('ECR login'){
+            steps{
+                sh '''
+                aws ecr get-login-password --region $AWS_REGION \
+                | docker login --username AWS --password-stdin 607709788195.dkr.ecr.ap-south-1.amazonaws.com
+                '''
+            }
+        }
+        stage('Docker push'){
+            steps{
+                sh "docker push $ECR_REPO:$IMAGE_TAG"
+            }
+        }
+        stage('Deploy to EKS') {
+            steps {
+                sh '''
+                aws eks update-kubeconfig \
+                --region $AWS_REGION \
+                --name my-cluster1
+
+                # Replace image in deployment
+                sed -i "s|IMAGE_PLACEHOLDER|$ECR_REPO:$IMAGE_TAG|g" SpringBootMongo.yaml
+
+                # Apply resources in order
+                kubectl apply -f SpringBootMongo.yaml
+                kubectl apply -f ingress.yaml
+
+
+                # Verify rollout
+                kubectl rollout status deployment/springboot-deployment -n production
+                '''
+            }
+        }
+
+        
+    } //stages closing
+} //pipeline close
