@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: spring-container
-        image: mithuntechnologies/springboot-mongo-application:1
+        image: IMAGE_PLACEHOLDER
         ports:
         - containerPort: 8080
 
